@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1609000880879.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1988947919",
+    "id" : "1CC3463D",
+    "lastKnownWriteTime" : 1609086185,
+    "last_content_update" : 1609086185068,
+    "path" : "C:/Users/iamre/Desktop/Assignment/FDS Assignment.R",
+    "project_path" : "FDS Assignment.R",
+    "properties" : {
+        "cursorPosition" : "88,15",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

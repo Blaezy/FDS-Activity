@@ -1,0 +1,89 @@
+#Reading DataSet From Local Computer
+dataset=read.csv('Real estate.csv')
+str(dataset)
+dataset=dataset[2:8]
+#datapreprocessing
+summary(dataset$X1.transaction.date)
+
+
+#Handling missing data if there are any
+sum(is.na(dataset$X1.transaction.date))
+sum(is.na(dataset$X2.house.age))
+sum(is.na(dataset$X3.distance.to.the.nearest.MRT.station))
+sum(is.na(dataset$X4.number.of.convenience.stores))
+sum(is.na(dataset$X5.latitude))
+sum(is.na(dataset$X6.longitude))
+sum(is.na(dataset$Y.house.price.of.unit.area))
+
+#Visual understanding of data
+hist(dataset$X1.transaction.date, main="Histogram of Transaction date",ylab="Date(Year)")
+hist(dataset$X2.house.age, main="Histogram of House Age",ylab="Years")
+hist(dataset$X3.distance.to.the.nearest.MRT.station, main="Histogram of distance to the nearest Station",ylab="Kilometers")
+hist(dataset$X4.number.of.convenience.stores, main="Histogram of No of Convenient Stores",ylab="Numbers")
+hist(dataset$X5.latitude, main="Histogram of Latitudes",ylab="Degrees")
+hist(dataset$X6.longitude, main="Histogram of Longitudes",ylab="Degrees")
+
+#Exploring relationships among features using correlation matrix
+cor(x = dataset,use = "everything")
+
+install.packages("psych")
+library('psych')
+
+
+#visualizing the relationship
+pairs.panels(dataset,scale = TRUE)
+
+
+#Splitting the dataset into test set and train set
+library(caTools)
+set.seed(123)
+split = sample.split(dataset$Y.house.price.of.unit.area, SplitRatio = 0.8)
+training_set = subset(dataset, split == TRUE)
+test_set = subset(dataset, split == FALSE)
+
+
+#creating the Model
+regressor=lm(formula = Y.house.price.of.unit.area~X1.transaction.date+X2.house.age+X3.distance.to.the.nearest.MRT.station+X4.number.of.convenience.stores+X5.latitude+X6.longitude,training_set)
+summary(regressor)
+
+#Backward Elimination
+regressor=lm(formula  = Y.house.price.of.unit.area~X1.transaction.date+X2.house.age+X3.distance.to.the.nearest.MRT.station+X4.number.of.convenience.stores+X5.latitude,training_set)
+summary(regressor)
+
+#applied logarithmic transformation
+regressor=lm(formula  = log(Y.house.price.of.unit.area)~X1.transaction.date+X2.house.age+X3.distance.to.the.nearest.MRT.station+X4.number.of.convenience.stores+X5.latitude,training_set)
+summary(regressor)
+
+
+#predicting values
+
+y_pred=predict(regressor,newdata = test_set)
+
+
+str(y_pred)
+
+library(ggplot2)
+names(y_pred)<-NULL
+str(y_pred)
+str(test_set$Y.house.price.of.unit.area)
+
+Matrix<-matrix(nrow = 83,ncol = 2,)
+Matrix[,1]=log(test_set$Y.house.price.of.unit.area)
+Matrix[,2]=y_pred
+str(Matrix)
+colnames(Matrix)<-c("Actual","Predicted")
+
+
+Actual_predicDF<-as.data.frame(Matrix)
+str(Actual_predicDF)
+Actual_predicDF<-Actual_predicDF[order(Actual_predicDF$Actual),]
+
+library(ggplot2)
+ggplot(Actual_predicDF,aes(x =1:nrow(Actual_predicDF),color=Series)) +
+  geom_line(data = Actual_predicDF, aes(x =1:nrow(Actual_predicDF),
+                                         y = Actual, color ="Actual")) +
+  geom_line(data = Actual_predicDF, aes(x =1:nrow(Actual_predicDF),
+                                         y = Predicted, color ="Predicted")) +xlab('Number') +ylab('Log(Price Per Unit Area)')
+
+summary(regressor)
+plot(regressor)

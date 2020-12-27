@@ -1,0 +1,48 @@
+dataset=read.csv('Real estate.csv')
+
+
+
+library(caTools)
+set.seed(123)
+split = sample.split(dataset$Y.house.price.of.unit.area, SplitRatio = 0.8)
+training_set = subset(dataset, split == TRUE)
+test_set = subset(dataset, split == FALSE)
+
+regressor=lm(formula = dataset$Y.house.price.of.unit.area~dataset$X1.transaction.date+dataset$X2.house.age+dataset$X3.distance.to.the.nearest.MRT.station+dataset$X4.number.of.convenience.stores+dataset$X5.latitude+dataset$X6.longitude,data = training_set)
+summary(regressor)
+
+y_pred=predict(regressor,newdata = test_set)
+y_pred
+
+
+regressor=lm(formula = dataset$Y.house.price.of.unit.area~dataset$X1.transaction.date+dataset$X2.house.age+dataset$X3.distance.to.the.nearest.MRT.station+dataset$X4.number.of.convenience.stores+dataset$X5.latitude+dataset$X6.longitude,data = training_set)
+summary(regressor)
+
+regressor=lm(formula = dataset$Y.house.price.of.unit.area~dataset$X1.transaction.date+dataset$X2.house.age+dataset$X3.distance.to.the.nearest.MRT.station+dataset$X4.number.of.convenience.stores+dataset$X5.latitude,data = training_set)
+summary(regressor)
+
+y_test=test_set$Y.house.price.of.unit.area
+
+t=seq(0,55)
+plot(y_pred,type = "l")
+
+
+actual_predicted <-as.data.frame(cbind(as.numeric(dataset$No),as.numeric(log(dataset$Y.house.price.of.unit.area)),as.numeric(fitted(regressor))))
+
+names(actual_predicted) <-c("No","Actual","Predicted")
+actual_predicted <-actual_predicted[order(actual_predicted$Actual),]
+library(ggplot2)
+ggplot(actual_predicted,aes(x =1:nrow(dataset),color=Series)) +
+  geom_line(data = actual_predicted, aes(x =1:nrow(dataset),
+                                         y = Actual, color ="Actual")) +
+  geom_line(data = actual_predicted, aes(x =1:nrow(dataset),
+                                         y = Predicted, color ="Predicted")) +xlab('Number') +ylab('Price Per Unit Area')
+
+plot(regressor)
+
+regressor=lm(formula = log(dataset$Y.house.price.of.unit.area)~dataset$X1.transaction.date+dataset$X2.house.age+dataset$X3.distance.to.the.nearest.MRT.station+dataset$X4.number.of.convenience.stores+dataset$X5.latitude,data = training_set)
+summary(regressor)
+
+fina.data=data.frame(dataset$X1.transaction.date,dataset$X2.house.age,dataset$X3.distance.to.the.nearest.MRT.station,dataset$X4.number.of.convenience.stores,dataset$X5.latitude,dataset$Y.house.price.of.unit.area)
+pairs(fina.data)
+
